@@ -11,12 +11,13 @@ import { collectTags, filterBlueprints } from './lib/search'
 import { STACK_PRESETS } from './lib/stacks'
 import { isLocalBlueprint, loadBlueprints, saveCustomBlueprints } from './lib/storage'
 import { quietButtonClass } from './lib/styles'
-import type { Blueprint, BlueprintDraft } from './types'
+import type { Blueprint, BlueprintDraft, BlueprintKind } from './types'
 
 export default function App() {
   const [blueprints, setBlueprints] = useState<Blueprint[]>(loadBlueprints)
   const [query, setQuery] = useState('')
   const [activeTags, setActiveTags] = useState<string[]>([])
+  const [kind, setKind] = useState<BlueprintKind | 'all'>('all')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [toast, setToast] = useState<{ id: number; message: string } | null>(null)
@@ -40,8 +41,8 @@ export default function App() {
   const tags = useMemo(() => collectTags(blueprints), [blueprints])
   const suggestions = useMemo(() => [...new Set([...STACK_PRESETS, ...tags])], [tags])
   const results = useMemo(
-    () => filterBlueprints(blueprints, query, activeTags),
-    [blueprints, query, activeTags],
+    () => filterBlueprints(blueprints, query, activeTags, kind),
+    [blueprints, query, activeTags, kind],
   )
 
   function toggleTag(tag: string) {
@@ -124,9 +125,12 @@ export default function App() {
         tags={tags}
         activeTags={activeTags}
         onToggleTag={toggleTag}
+        kind={kind}
+        onKindChange={setKind}
         onClear={() => {
           setQuery('')
           setActiveTags([])
+          setKind('all')
         }}
         resultCount={results.length}
         totalCount={blueprints.length}
@@ -146,7 +150,9 @@ export default function App() {
       />
       <main id="catalog" className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
         <h2 className="sr-only">Blueprints</h2>
-        <p className="mb-6 text-sm text-muted">Flip a card for its rebuild prompt.</p>
+        <p className="mb-6 text-sm text-muted">
+          Flip a card for its rebuild prompt. Filter by Sites for full apps, or Pages for a single page blueprint.
+        </p>
         {results.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-line px-6 py-16 text-center">
             <p className="font-serif text-3xl text-paper">No matching blueprints</p>
@@ -159,6 +165,7 @@ export default function App() {
               onClick={() => {
                 setQuery('')
                 setActiveTags([])
+                setKind('all')
               }}
             >
               Clear filters

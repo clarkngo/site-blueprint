@@ -1,6 +1,7 @@
 import { useEffect, useRef, type Ref } from 'react'
 import { Plus, Search, X, Zap } from 'lucide-react'
 import { primaryButtonClass, quietButtonClass } from '../lib/styles'
+import type { BlueprintKind } from '../types'
 
 type HeaderProps = {
   query: string
@@ -8,6 +9,8 @@ type HeaderProps = {
   tags: string[]
   activeTags: string[]
   onToggleTag: (tag: string) => void
+  kind: BlueprintKind | 'all'
+  onKindChange: (kind: BlueprintKind | 'all') => void
   onClear: () => void
   resultCount: number
   totalCount: number
@@ -29,6 +32,8 @@ export function Header({
   tags,
   activeTags,
   onToggleTag,
+  kind,
+  onKindChange,
   onClear,
   resultCount,
   totalCount,
@@ -39,7 +44,7 @@ export function Header({
   addButtonRef,
 }: HeaderProps) {
   const searchRef = useRef<HTMLInputElement>(null)
-  const filtering = query.trim().length > 0 || activeTags.length > 0
+  const filtering = query.trim().length > 0 || activeTags.length > 0 || kind !== 'all'
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -126,6 +131,26 @@ export function Header({
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
+          {(['all', 'site', 'page'] as const).map((option) => {
+            const active = kind === option
+            const label = option === 'all' ? 'All' : option === 'site' ? 'Sites' : 'Pages'
+            return (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={active}
+                onClick={() => onKindChange(option)}
+                className={
+                  active
+                    ? 'rounded-full bg-cyan px-2.5 py-1 text-xs font-semibold text-ink'
+                    : 'rounded-full border border-line px-2.5 py-1 text-xs text-muted hover:text-paper'
+                }
+              >
+                {label}
+              </button>
+            )
+          })}
+          <span className="mx-1 hidden h-4 w-px bg-line sm:block" aria-hidden="true" />
           {tags.map((tag) => {
             const active = tagActive(activeTags, tag)
             return (

@@ -5,11 +5,13 @@ export function downloadBlueprints(blueprints: Blueprint[]) {
     id: item.id,
     title: item.title,
     category: item.category,
+    kind: item.kind,
     siteUrl: item.siteUrl,
     repoUrl: item.repoUrl,
     tags: item.tags,
     summary: item.summary,
     prompt: item.prompt,
+    ...(item.promptModes?.length ? { promptModes: item.promptModes } : {}),
   }))
   const blob = new Blob([`${JSON.stringify(clean, null, 2)}\n`], {
     type: 'application/json',
