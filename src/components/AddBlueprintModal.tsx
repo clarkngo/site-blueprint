@@ -3,7 +3,7 @@ import { Download } from 'lucide-react'
 import { TagInput } from './TagInput'
 import { safeHttpUrl } from '../lib/blueprint'
 import { fieldClass, labelClass, primaryButtonClass, quietButtonClass } from '../lib/styles'
-import type { BlueprintDraft } from '../types'
+import type { BlueprintDraft, BlueprintKind } from '../types'
 
 type AddBlueprintModalProps = {
   suggestions: string[]
@@ -16,6 +16,7 @@ export function AddBlueprintModal({ suggestions, onClose, onExport, onSubmit }: 
   const titleRef = useRef<HTMLInputElement>(null)
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('Custom Blueprint')
+  const [kind, setKind] = useState<BlueprintKind>('site')
   const [siteUrl, setSiteUrl] = useState('')
   const [repoUrl, setRepoUrl] = useState('')
   const [summary, setSummary] = useState('')
@@ -45,6 +46,7 @@ export function AddBlueprintModal({ suggestions, onClose, onExport, onSubmit }: 
     onSubmit({
       title: title.trim(),
       category: category.trim() || 'Custom Blueprint',
+      kind,
       siteUrl: safeHttpUrl(siteUrl) ?? '',
       repoUrl: safeHttpUrl(repoUrl) ?? '',
       tags,
@@ -70,21 +72,43 @@ export function AddBlueprintModal({ suggestions, onClose, onExport, onSubmit }: 
           <form className="mt-5 grid gap-4" onSubmit={submit}>
             <div>
               <label htmlFor="add-title" className={labelClass}>
-                Site Title
+                Title
               </label>
               <input ref={titleRef} id="add-title" value={title} onChange={(event) => setTitle(event.target.value)} className={fieldClass} aria-invalid={Boolean(errors.title)} />
               {errors.title ? <p className="mt-1 text-sm text-danger">{errors.title}</p> : null}
             </div>
-            <div>
-              <label htmlFor="add-category" className={labelClass}>
-                Category
-              </label>
-              <input id="add-category" value={category} onChange={(event) => setCategory(event.target.value)} className={fieldClass} />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="add-category" className={labelClass}>
+                  Category
+                </label>
+                <input id="add-category" value={category} onChange={(event) => setCategory(event.target.value)} className={fieldClass} />
+              </div>
+              <div>
+                <span className={labelClass}>Scope</span>
+                <div className="flex gap-2">
+                  {(['site', 'page'] as const).map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      aria-pressed={kind === option}
+                      onClick={() => setKind(option)}
+                      className={
+                        kind === option
+                          ? 'flex-1 rounded-full bg-ice px-3 py-2.5 text-sm font-semibold text-ink'
+                          : 'flex-1 rounded-full border border-line px-3 py-2.5 text-sm text-muted hover:text-paper'
+                      }
+                    >
+                      {option === 'site' ? 'Site' : 'Page'}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="add-site" className={labelClass}>
-                  Live site URL
+                  Live URL
                 </label>
                 <input id="add-site" value={siteUrl} onChange={(event) => setSiteUrl(event.target.value)} className={fieldClass} placeholder="https://" aria-invalid={Boolean(errors.siteUrl)} />
                 {errors.siteUrl ? <p className="mt-1 text-sm text-danger">{errors.siteUrl}</p> : null}

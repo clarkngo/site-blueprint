@@ -1,5 +1,5 @@
 import Fuse, { type IFuseOptions } from 'fuse.js'
-import type { Blueprint } from '../types'
+import type { Blueprint, BlueprintKind } from '../types'
 
 const options: IFuseOptions<Blueprint> = {
   threshold: 0.38,
@@ -10,6 +10,7 @@ const options: IFuseOptions<Blueprint> = {
     { name: 'tags', weight: 0.3 },
     { name: 'summary', weight: 0.2 },
     { name: 'category', weight: 0.15 },
+    { name: 'kind', weight: 0.05 },
   ],
 }
 
@@ -18,9 +19,15 @@ function hasTag(item: Blueprint, tag: string) {
   return item.tags.some((itemTag) => itemTag.toLowerCase() === needle)
 }
 
-export function filterBlueprints(items: Blueprint[], query: string, tags: string[]) {
+export function filterBlueprints(
+  items: Blueprint[],
+  query: string,
+  tags: string[],
+  kind: BlueprintKind | 'all' = 'all',
+) {
+  const byKind = kind === 'all' ? items : items.filter((item) => item.kind === kind)
   const tagged =
-    tags.length === 0 ? items : items.filter((item) => tags.every((tag) => hasTag(item, tag)))
+    tags.length === 0 ? byKind : byKind.filter((item) => tags.every((tag) => hasTag(item, tag)))
   const q = query.trim()
   if (!q) return tagged
   return new Fuse(tagged, options).search(q).map((result) => result.item)

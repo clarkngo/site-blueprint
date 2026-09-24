@@ -49,6 +49,7 @@ export function GeneratorDrawer({ open, suggestions, onClose, onSave, onCopied, 
     const draft: BlueprintDraft = {
       title: title.trim(),
       category: 'Custom Blueprint',
+      kind: 'site',
       siteUrl: links.siteUrl,
       repoUrl: links.repoUrl,
       tags: stack,
