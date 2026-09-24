@@ -127,7 +127,20 @@ export function generateMasterPrompt(input: PromptInput): string {
     '- Client-side only unless the purpose explicitly requires a backend. No secrets in the browser.',
     '- Deploy the static build with GitHub Actions.',
     ...libraryNotes(stack),
-    ...(url ? ['', '## Reference', `- URL: ${url}`, '- Use it as a product reference for scope and naming. Rebuild the experience in this stack.'] : []),
+    ...(url
+      ? [
+          '',
+          '## Reference (do not clone)',
+          `- URL: ${url}`,
+          '- Use this only for UX, information architecture, and interaction quality.',
+          `- Build "${title}" as an **original** product: new brand voice, visuals, and seed content.`,
+          '- Do not reuse the reference site\'s name, logos, trademarks, proprietary copy, course text, or other IP.',
+        ]
+      : []),
+    '',
+    '## Originality',
+    '- Invent naming and copy that belong to this project.',
+    '- Seed data must be original. Structural similarity to a reference is fine; identity copying is not.',
     '',
     '## Product purpose',
     quote(purpose),
@@ -166,6 +179,7 @@ export function generateMasterPrompt(input: PromptInput): string {
     '- [ ] Controls are keyboard reachable with a visible focus state.',
     '- [ ] The named stack is actually used, not listed and then replaced.',
     '- [ ] No API key or account is required for the core flow.',
+    '- [ ] Branding and seed content are original (not a clone of any reference URL).',
   ]
 
   return lines.join('\n')
