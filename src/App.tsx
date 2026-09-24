@@ -192,7 +192,18 @@ export default function App() {
       </main>
       <footer className="mx-auto max-w-7xl px-4 pt-4 pb-10 sm:px-6 lg:px-10">
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6 text-sm text-muted">
-          <p>Cards you add stay in this browser. Export JSON to keep them in the repo.</p>
+          <p>
+            Built by{' '}
+            <a
+              href="https://www.linkedin.com/in/clarkngo/"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="text-paper underline-offset-2 hover:text-ice hover:underline"
+            >
+              Clark Ngo
+            </a>
+            . Cards you add stay in this browser — export JSON to keep them in the repo.
+          </p>
           <div className="flex flex-wrap items-center gap-4">
             <button type="button" className="inline-flex items-center gap-2 text-paper hover:text-ice" onClick={exportCatalog}>
               <Download className="size-4" aria-hidden="true" />
